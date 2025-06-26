@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Base styles with animations */
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        p {
+            font-weight: 300;
+            transition: color 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            font-weight: 100;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        h1 {
+            font-weight: 100;
+        }
+
+        h2 {
+            font-weight: 100;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1400px;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            background-color: #e2e8f0;
+            border-bottom: 1px solid #cbd5e1;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-tab {
+            padding: 16px 24px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #475569;
+            transition: all 0.3s ease, transform 0.2s ease;
+            border-bottom: 3px solid transparent;
+            text-align: center;
+        }
+
+        .nav-tab:hover {
+            transform: scale(1.1);
+            color: #4c51bf;
+        }
+
+        .nav-tab.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+            background-color: #ffffff;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .content-section {
+            padding: 32px;
+            display: none;
+            flex-grow: 1;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="date"],
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease, border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            transform: scale(1.02);
+        }
+
+        .action-button {
+            background-image: linear-gradient(to right, #6366f1 0%, #8b5cf6 51%, #6366f1 100%);
+            margin: 10px;
+            padding: 15px 45px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: all 0.5s ease, transform 0.2s ease;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px #eee;
+            border-radius: 10px;
+            display: block;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            /* Removed animation for specific login buttons via a new class */
+            animation: pulse 1.5s infinite; /* Default for other buttons */
+        }
+
+        /* New class for login buttons to remove animation */
+        .login-action-button {
+            animation: none; /* Override pulse animation */
+        }
+        /* Keep hover for login buttons */
+        .login-action-button:hover {
+            background-position: right center;
+            color: #fff;
+            text-decoration: none;
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+        .login-action-button:active {
+            transform: scale(0.95);
+        }
+
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .action-button:hover {
+            background-position: right center;
+            color: #fff;
+            text-decoration: none;
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .action-button:active {
+            transform: scale(0.95);
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            animation: bounceIn 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .message.success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .user-table-container {
+            margin-top: 32px;
+            overflow-x: auto;
+            width: 100%;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .user-table th,
+        .user-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+            vertical-align: middle;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .user-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .user-table tr:hover td {
+            background-color: #e6e6e6;
+            transform: scale(1.01);
+        }
+
+        .user-table td button {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 14px;
+            margin-right: 4px;
+            border-radius: 6px;
+            transition: all 0.3s ease, transform 0.2s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .user-table td .btn-update {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .user-table td .btn-update:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .user-table td .btn-delete {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .user-table td .btn-delete:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Modal styles with animations */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(0);
+            animation: scaleIn 0.3s ease forwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        /* Fade out animation for modal */
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.8); }
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            transform: rotate(90deg);
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1e293b;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                display: grid;
+                grid-template-columns: 200px 1fr;
+                grid-template-rows: auto 1fr;
+                grid-template-areas:
+                    "header header"
+                    "nav    main";
+                transition: all 0.5s ease;
+            }
+
+            .header {
+                grid-area: header;
+                border-bottom-left-radius: 0;
+            }
+
+            .nav-tabs {
+                grid-area: nav;
+                flex-direction: column;
+                justify-content: flex-start;
+                border-bottom: none;
+                border-right: 1px solid #cbd5e1;
+                background-color: #e2e8f0;
+                padding-top: 20px;
+                min-height: 100%;
+                transition: transform 0.3s ease;
+            }
+
+            .nav-tab {
+                border-right: 3px solid transparent;
+                border-bottom: none;
+                text-align: left;
+                width: 100%;
+                padding-left: 24px;
+                background-color: transparent;
+            }
+
+            .nav-tab.active {
+                border-right-color: #6366f1;
+                background-color: #ffffff;
+            }
+
+            #main-content-wrapper {
+                grid-area: main;
+                padding: 32px;
+                overflow-y: auto;
+                transition: opacity 0.3s ease;
+            }
+
+            #registration-section form,
+            #admin-section form,
+            #login-section form,
+            #employeeDashboard > div,
+            #updateUserModal form {
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                transition: transform 0.3s ease;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="text-3xl font-bold">User Management System</h1>
+            <p class="mt-2 text-lg">Manage and view user registrations</p>
+        </div>
+
+        <div class="nav-tabs" id="navTabs">
+            <div class="nav-tab active" data-tab="home">Home</div>
+            <div class="nav-tab" data-tab="registration">Registration</div>
+            <div class="nav-tab" data-tab="admin">Admin</div>
+            <div class="nav-tab" data-tab="login">Employee Login</div>
+        </div>
+
+        <div id="main-content-wrapper">
+            <div id="home-section" class="content-section active">
+                <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Welcome to the User Management System!
+                </h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    This project is designed to efficiently manage user registrations, allowing for different roles
+                    (employees and administrators) with distinct access levels.
+                    Employees can register and then log in to view their own details. Administrators have the power to
+                    manage all employee records, including updating and deleting entries.
+                    Our aim is to provide a comprehensive and secure system for handling user information within an
+                    organization.
+                </p>
+                <div class="mt-8 text-center text-gray-600">
+                    <p class="text-xl font-semibold">About Me:</p>
+                    <p class="text-md mt-2">I am a large language model, trained by Google. I'm here to assist you with
+                        coding, writing, problem-solving, and more. This project showcases my ability to create
+                        interactive web applications and integrate with backend services.</p>
+                </div>
+            </div>
+
+            <div id="registration-section" class="content-section">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Register New User</h2>
+                <form id="registrationForm" class="mb-8 p-6 bg-gray-50 rounded-lg shadow-sm">
+                    <div class="form-group">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Register as:</label>
+                        <div class="flex items-center space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600 transition duration-300" name="role" value="employee"
+                                    checked>
+                                <span class="ml-2 text-gray-700">Employee</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600 transition duration-300" name="role" value="admin">
+                                <span class="ml-2 text-gray-700">Admin</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="regUserId">User ID:</label>
+                            <input type="text" id="regUserId" name="userId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword">Password:</label>
+                            <input type="password" id="regPassword" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regFullName">Full Name:</label>
+                            <input type="text" id="regFullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDesignation">Designation:</label>
+                            <input type="text" id="regDesignation" name="designation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDepartment">Department:</label>
+                            <input type="text" id="regDepartment" name="department" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regUG">UG Qualification:</label>
+                            <input type="text" id="regUG" name="ug" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPG">PG Qualification:</label>
+                            <input type="text" id="regPG" name="pg" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPhD">PhD Qualification:</label>
+                            <input type="text" id="regPhD" name="phd" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDateOfBirth">Date of Birth:</label>
+                            <input type="date" id="regDateOfBirth" name="dateOfBirth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDateOfJoining">Date of Joining:</label>
+                            <input type="date" id="regDateOfJoining" name="dateOfJoining" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPrevFromDate">Previous Exp. From Date (Optional):</label>
+                            <input type="date" id="regPrevFromDate" name="previousExperienceFromDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="regPrevToDate">Previous Exp. To Date (Optional):</label>
+                            <input type="date" id="regPrevToDate" name="previousExperienceToDate">
+                        </div>
+                    </div>
+                    <button type="submit" class="action-button mt-6">Register User</button>
+                    <div id="registrationMessage" class="message hidden"></div>
+                </form>
+            </div>
+
+            <div id="admin-section" class="content-section">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Admin Login</h2>
+                <form id="adminLoginForm" class="mb-8 p-6 bg-gray-50 rounded-lg shadow-sm">
+                    <div class="form-group">
+                        <label for="adminUserId">User ID:</label>
+                        <input type="text" id="adminUserId" name="userId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Password:</label>
+                        <input type="password" id="adminPassword" name="password" required>
+                    </div>
+                    <!-- Added login-action-button class -->
+                    <button type="submit" class="action-button login-action-button mt-4">Login as Admin</button>
+                    <div id="adminLoginMessage" class="message hidden"></div>
+                </form>
+
+                <div id="adminDashboard" class="hidden">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Manage Employees</h3>
+                    <div id="adminUsersDisplay" class="user-table-container">
+                        <p class="text-center text-gray-500">Log in as admin to view and manage employee data.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="login-section" class="content-section">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Employee Login</h2>
+                <form id="employeeLoginForm" class="mb-8 p-6 bg-gray-50 rounded-lg shadow-sm">
+                    <div class="form-group">
+                        <label for="empLoginUserId">User ID:</label>
+                        <input type="text" id="empLoginUserId" name="userId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empLoginPassword">Password:</label>
+                        <input type="password" id="empLoginPassword" name="password" required>
+                    </div>
+                    <!-- Added login-action-button class -->
+                    <button type="submit" class="action-button login-action-button mt-4">Login as Employee</button>
+                    <div id="employeeLoginMessage" class="message hidden"></div>
+                </form>
+
+                <div id="employeeDashboard" class="hidden">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Your Profile</h3>
+                    <div id="loggedInUserDisplay" class="p-6 bg-gray-50 rounded-lg shadow-sm">
+                        <p class="text-center text-gray-500">Log in to view your profile.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="updateUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Update User Details</h3>
+            <form id="updateUserForm">
+                <input type="hidden" id="updateUserIdHidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="updateFullName">Full Name:</label>
+                        <input type="text" id="updateFullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDesignation">Designation:</label>
+                        <input type="text" id="updateDesignation" name="designation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDepartment">Department:</label>
+                        <input type="text" id="updateDepartment" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateUG">UG Qualification:</label>
+                        <input type="text" id="updateUG" name="ug" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePG">PG Qualification:</label>
+                        <input type="text" id="updatePG" name="pg" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePhD">PhD Qualification:</label>
+                        <input type="text" id="updatePhD" name="phd" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDateOfBirth">Date of Birth:</label>
+                        <input type="date" id="updateDateOfBirth" name="dateOfBirth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDateOfJoining">Date of Joining:</label>
+                        <input type="date" id="updateDateOfJoining" name="dateOfJoining" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePrevFromDate">Previous Exp. From Date (Optional):</label>
+                        <input type="date" id="updatePrevFromDate" name="previousExperienceFromDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePrevToDate">Previous Exp. To Date (Optional):</label>
+                        <input type="date" id="updatePrevToDate" name="previousExperienceToDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePassword">Password (leave blank to keep current):</label>
+                        <input type="password" id="updatePassword" name="password">
+                    </div>
+                </div>
+                <button type="submit" class="action-button">Save Changes</button>
+                <div id="updateMessage" class="message hidden"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+    
+</body>
+</html>

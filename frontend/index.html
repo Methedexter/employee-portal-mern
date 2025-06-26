@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css"> <!-- Link to your custom CSS -->
+
+    <style>
+        /* NEW VIBRANT COLOR PALETTE VARIABLES */
+        :root {
+            --color-darkest-blue: #1C274C; /* Deep, rich background blue */
+            --color-dark-blue: #2A3B66; /* Slightly lighter for elements */
+            --color-mid-blue: #3E518E; /* For contrasts */
+            --color-light-blue: #A9D9EE; /* Pale blue for subtle highlights */
+            --color-accent-teal: #00BCD4; /* Bright teal for primary accents/buttons */
+            --color-accent-electric-blue: #2196F3; /* Electric blue for header/secondary accents */
+            --color-text-light: #E0E0E0; /* Light gray for general text */
+            --color-text-faded: #B0B0B0; /* Faded gray for secondary text */
+            --color-white: #ffffff; /* Pure white */
+            --color-error-red: #FF5252; /* Vibrant red for errors */
+            --color-success-green: #4CAF50; /* Standard green for success */
+            --color-warning-orange: #FF9800; /* Orange for warnings */
+        }
+
+        /* Base styles */
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, var(--color-darkest-blue) 0%, #0D162F 100%); /* Deep blue gradient */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--color-text-light); /* Default text color */
+            transition: background-color 0.3s ease;
+        }
+
+        p {
+            font-weight: 300;
+            color: var(--color-text-faded);
+            transition: color 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            font-weight: 600; /* Bolder headings */
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            color: var(--color-white); /* White for main headings */
+        }
+
+        /* Container styling */
+        .container {
+            background-color: rgba(42, 59, 102, 0.9); /* Slightly transparent dark blue for container */
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1400px;
+            min-height: 80vh;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 200px 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            .header {
+                grid-column: 1 / -1;
+            }
+            .nav-tabs {
+                grid-column: 1 / 2;
+                grid-row: 2 / 3;
+                border-bottom: none;
+                border-right: 1px solid var(--color-mid-blue); /* Mid blue border */
+            }
+            #main-content-wrapper {
+                grid-column: 2 / 3;
+                grid-row: 2 / 3;
+            }
+        }
+
+        .container:hover {
+            transform: translateY(-5px) scale(1.005);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Header styling */
+        .header {
+            background: linear-gradient(to right, var(--color-accent-electric-blue), var(--color-accent-teal)); /* Electric blue to teal gradient */
+            color: var(--color-white);
+            padding: 24px;
+            text-align: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            position: relative;
+            box-shadow: inset 0 -3px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Company Logo Styling (retained from last update) */
+        .company-logo {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid var(--color-white);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .company-logo svg {
+            width: 70%;
+            height: 70%;
+            color: var(--color-white);
+        }
+        .company-logo:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideRight {
+            from { transform: translateX(-10px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.8); }
+        }
+
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            background-color: var(--color-dark-blue); /* Dark blue for nav */
+            border-bottom: 1px solid var(--color-mid-blue);
+            transition: background-color 0.3s ease;
+            padding-top: 16px;
+        }
+
+        .nav-tab {
+            padding: 16px 24px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--color-text-faded);
+            transition: all 0.3s ease, transform 0.2s ease;
+            border-left: 3px solid transparent;
+            text-align: left;
+        }
+
+        .nav-tab:hover {
+            transform: translateX(5px);
+            color: var(--color-accent-teal); /* Teal on hover */
+            background-color: var(--color-mid-blue); /* Mid blue on hover */
+        }
+
+        .nav-tab.active {
+            color: var(--color-accent-teal); /* Teal active color */
+            border-left-color: var(--color-accent-teal); /* Teal active border */
+            background-color: var(--color-darkest-blue); /* Darkest blue for active background */
+            animation: slideRight 0.3s ease;
+        }
+
+        /* Content Section */
+        .content-section {
+            padding: 32px;
+            display: none;
+            flex-grow: 1;
+            background-color: var(--color-darkest-blue); /* Darkest blue for content background */
+        }
+        .content-section.active {
+            display: block;
+        }
+
+        /* Form Group Styling */
+        .form-group {
+            margin-bottom: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--color-text-light);
+            transition: color 0.3s ease;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="date"],
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--color-mid-blue);
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: var(--color-dark-blue); /* Darker input background */
+            color: var(--color-text-light); /* Light text in inputs */
+            transition: all 0.3s ease, border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--color-accent-teal); /* Teal focus border */
+            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.4); /* Teal shadow */
+            transform: scale(1.02);
+        }
+
+        /* General Action Button Styling */
+        .action-button {
+            background-image: linear-gradient(to right, var(--color-accent-electric-blue) 0%, var(--color-accent-teal) 51%, var(--color-accent-electric-blue) 100%); /* Electric blue to teal gradient */
+            margin: 10px;
+            padding: 15px 45px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: all 0.5s ease, transform 0.2s ease;
+            background-size: 200% auto;
+            color: var(--color-white);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            display: block;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            animation: none;
+        }
+
+        .action-button:hover {
+            background-position: right center;
+            color: var(--color-white);
+            text-decoration: none;
+            transform: scale(1.03); /* User's preferred size on hover (preserved) */
+            box-shadow: 0 10px 25px rgba(33, 150, 243, 0.4); /* Shadow with electric blue */
+        }
+
+        .action-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Specific styles for table action buttons (Update/Delete) */
+        .user-table td .update-button {
+            background-color: var(--color-accent-teal); /* Teal update button */
+            color: var(--color-white);
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+        }
+
+        .user-table td .update-button:hover {
+            background-color: #00ACC1; /* Darker teal on hover */
+            transform: scale(1.05);
+        }
+
+        .user-table td .delete-button {
+            background-color: var(--color-error-red); /* Red delete button */
+            color: var(--color-white);
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+        }
+
+        .user-table td .delete-button:hover {
+            background-color: #D32F2F; /* Darker red on hover */
+            transform: scale(1.05);
+        }
+
+        /* Message styles */
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            animation: bounceIn 0.5s ease;
+            color: var(--color-white); /* Message text white */
+        }
+
+        .message.success {
+            background-color: rgba(76, 175, 80, 0.2); /* Transparent success green */
+            border: 1px solid var(--color-success-green);
+        }
+
+        .message.error {
+            background-color: rgba(255, 82, 82, 0.2); /* Transparent error red */
+            border: 1px solid var(--color-error-red);
+        }
+
+        /* User Table Styling */
+        .user-table-container {
+            margin-top: 32px;
+            overflow-x: auto;
+            width: 100%;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+            animation: fadeIn 0.5s ease;
+            background-color: var(--color-dark-blue); /* Dark blue table background */
+            border: 1px solid var(--color-mid-blue);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .user-table th,
+        .user-table td {
+            border: 1px solid var(--color-mid-blue); /* Mid blue border */
+            padding: 12px;
+            text-align: left;
+            vertical-align: middle;
+            color: var(--color-text-light); /* Light text in table */
+        }
+
+        .user-table th {
+            background-color: var(--color-mid-blue); /* Mid blue table header */
+            font-weight: 600;
+            color: var(--color-white);
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.05em;
+        }
+
+        .user-table tbody tr {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .user-table tbody tr:nth-child(odd) {
+            background-color: var(--color-dark-blue); /* Dark blue for odd rows */
+        }
+
+        .user-table tbody tr:nth-child(even) {
+            background-color: var(--color-darkest-blue); /* Darkest blue for even rows */
+        }
+
+        .user-table tbody tr:hover {
+            background-color: rgba(0, 188, 212, 0.2); /* Teal tint on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .dept-col {
+            width: 8%;
+            min-width: 60px;
+            word-wrap: break-word;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7); /* Darker overlay */
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px); /* Stronger blur */
+            animation: fadeInBackground 0.3s ease-out;
+        }
+
+        @keyframes fadeInBackground {
+            from { background-color: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); }
+            to { background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); }
+        }
+
+        .modal-content {
+            background-color: var(--color-dark-blue); /* Dark blue modal content */
+            color: var(--color-text-light);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 650px;
+            position: relative;
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--color-accent-teal); /* Teal border */
+            max-height: 90vh; /* Allow modal to take up to 90% of viewport height */
+            overflow-y: auto;
+        }
+
+        .close-button {
+            color: var(--color-text-faded);
+            font-size: 32px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--color-accent-teal); /* Teal on hover */
+            transform: rotate(90deg);
+        }
+
+        /* Previous Experience entry styles (within forms) */
+        .previous-experience-entry {
+            background-color: var(--color-mid-blue); /* Mid blue for these sections */
+            border: 1px solid var(--color-dark-blue);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
+        }
+
+        .previous-experience-entry .remove-experience-btn {
+            background-color: var(--color-error-red); /* Red for remove button */
+            color: var(--color-white);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            float: right;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .previous-experience-entry .remove-experience-btn:hover {
+            background-color: #D32F2F; /* Darker red */
+            transform: scale(1.1);
+        }
+
+        /* Specific styling for registration and login forms */
+        #registrationForm, #adminLoginForm, #employeeLoginForm {
+            background-color: var(--color-dark-blue); /* Dark blue for forms */
+            border: 1px solid var(--color-mid-blue);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        #registrationForm .form-group label,
+        #adminLoginForm .form-group label,
+        #employeeLoginForm .form-group label {
+            color: var(--color-text-light);
+        }
+
+        #registrationForm input,
+        #adminLoginForm input,
+        #employeeLoginForm input,
+        #registrationForm select,
+        #adminLoginForm select,
+        #employeeLoginForm select {
+            background-color: var(--color-mid-blue); /* Mid blue background for inputs */
+            border-color: var(--color-dark-blue);
+            color: var(--color-text-light);
+        }
+
+        #registrationForm input:focus,
+        #adminLoginForm input:focus,
+        #employeeLoginForm input:focus {
+            border-color: var(--color-accent-teal);
+            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="text-3xl font-bold">User Management System</h1>
+            <p class="mt-2 text-lg">Manage and view user registrations</p>
+            <!-- Company Logo (Futuristic SVG - KEPT) -->
+            <div id="companyLogo" class="company-logo">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7V17L12 22L22 17V7L12 2ZM12 4.472L19.8 8.736L12 13L4.2 8.736L12 4.472ZM4 10.272L11 14.168V20.528L4 16.632V10.272ZM13 14.168L20 10.272V16.632L13 20.528V14.168Z" fill="currentColor"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="nav-tabs" id="navTabs">
+            <div class="nav-tab active" data-tab="home">Home</div>
+            <div class="nav-tab" data-tab="registration">Registration</div>
+            <div class="nav-tab" data-tab="admin">Admin</div>
+            <div class="nav-tab" data-tab="login">Employee Login</div>
+            <!-- The logout button will be created and managed dynamically by script.js -->
+        </div>
+
+        <div id="main-content-wrapper">
+            <div id="home-section" class="content-section active">
+                <h2 class="text-3xl font-bold mb-6 text-center">Welcome to the User Management System!
+                </h2>
+                <p class="text-lg leading-relaxed">
+                    This project is designed to efficiently manage user registrations, allowing for different roles
+                    (employees and administrators) with distinct access levels.
+                    Employees can register and then log in to view their own details. Administrators have the power to
+                    manage all employee records, including updating and deleting entries.
+                    Our aim is to provide a comprehensive and secure system for handling user information within an
+                    organization.
+                </p>
+                <div class="mt-8 text-center">
+                    <p class="text-xl font-semibold">About Me:</p>
+                    <p class="text-md mt-2">I am a large language model, trained by Google. I'm here to assist you with
+                        coding, writing, problem-solving, and more. This project showcases my ability to create
+                        interactive web applications and integrate with backend services.</p>
+                </div>
+            </div>
+
+            <div id="registration-section" class="content-section">
+                <h2 class="text-2xl font-bold mb-6 text-center">Register New User</h2>
+                <form id="registrationForm" class="mb-8 p-6 rounded-lg shadow-sm mx-auto max-w-4xl">
+                    <div class="form-group">
+                        <label class="block text-sm font-bold mb-2">Register as:</label>
+                        <div class="flex items-center space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600 transition duration-300" name="role" value="employee"
+                                    checked>
+                                <span class="ml-2">Employee</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600 transition duration-300" name="role" value="admin">
+                                <span class="ml-2">Admin</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="regUserId">User ID:</label>
+                            <input type="text" id="regUserId" name="userId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword">Password:</label>
+                            <input type="password" id="regPassword" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regFullName">Full Name:</label>
+                            <input type="text" id="regFullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDesignation">Designation:</label>
+                            <input type="text" id="regDesignation" name="designation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDepartment">Department:</label>
+                            <input type="text" id="regDepartment" name="department" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regUG">UG Qualification:</label>
+                            <input type="text" id="regUG" name="ug" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPG">PG Qualification:</label>
+                            <input type="text" id="regPG" name="pg" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPhD">PhD Qualification:</label>
+                            <input type="text" id="regPhD" name="phd" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDateOfBirth">Date of Birth:</label>
+                            <input type="date" id="regDateOfBirth" name="dateOfBirth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regDateOfJoining">Date of Joining:</label>
+                            <input type="date" id="regDateOfJoining" name="dateOfJoining" required>
+                        </div>
+                        <!-- Container for multiple previous experiences -->
+                        <div class="md:col-span-2 border p-4 rounded-lg bg-gray-100" id="regPreviousExperienceContainer">
+                            <h4 class="text-lg font-semibold mb-3">Previous Experience(s)</h4>
+                            <!-- Initial previous experience entry will be added by JS -->
+                            <button type="button" id="addMorePrevExpReg" class="action-button mt-4 px-6 py-2 text-base">Add More Experience</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="action-button mt-6">Register User</button>
+                    <div id="registrationMessage" class="message hidden"></div>
+                </form>
+            </div>
+
+            <div id="admin-section" class="content-section">
+                <h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+                <form id="adminLoginForm" class="mb-8 p-6 rounded-lg shadow-sm mx-auto max-w-lg">
+                    <div class="form-group">
+                        <label for="adminUserId">User ID:</label>
+                        <input type="text" id="adminUserId" name="userId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Password:</label>
+                        <input type="password" id="adminPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="action-button mt-4">Login as Admin</button>
+                    <div id="adminLoginMessage" class="message hidden"></div>
+                </form>
+
+                <div id="adminDashboard" class="hidden">
+                    <h3 class="text-xl font-bold mb-4">Manage Employees</h3>
+                    <div id="adminUsersDisplay" class="user-table-container">
+                        <p class="text-center">Log in as admin to view and manage employee data.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="login-section" class="content-section">
+                <h2 class="text-2xl font-bold mb-6 text-center">Employee Login</h2>
+                <form id="employeeLoginForm" class="mb-8 p-6 rounded-lg shadow-sm mx-auto max-w-lg">
+                    <div class="form-group">
+                        <label for="empLoginUserId">User ID:</label>
+                        <input type="text" id="empLoginUserId" name="userId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empLoginPassword">Password:</label>
+                        <input type="password" id="empLoginPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="action-button mt-4">Login as Employee</button>
+                    <div id="employeeLoginMessage" class="message hidden"></div>
+                </form>
+
+                <div id="employeeDashboard" class="hidden">
+                    <h3 class="text-xl font-bold mb-4">Your Profile</h3>
+                    <div id="loggedInUserDisplay" class="p-6 rounded-lg shadow-sm">
+                        <p class="text-center">Log in to view your profile.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="updateUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Update User Details</h3>
+            <form id="updateUserForm">
+                <input type="hidden" id="updateUserIdHidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="updateFullName">Full Name:</label>
+                        <input type="text" id="updateFullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDesignation">Designation:</label>
+                        <input type="text" id="updateDesignation" name="designation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDepartment">Department:</label>
+                        <input type="text" id="updateDepartment" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateUG">UG Qualification:</label>
+                        <input type="text" id="updateUG" name="ug" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePG">PG Qualification:</label>
+                        <input type="text" id="updatePG" name="pg" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePhD">PhD Qualification:</label>
+                        <input type="text" id="updatePhD" name="phd" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDateOfBirth">Date of Birth:</label>
+                        <input type="date" id="updateDateOfBirth" name="dateOfBirth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDateOfJoining">Date of Joining:</label>
+                        <input type="date" id="updateDateOfJoining" name="dateOfJoining" required>
+                    </div>
+                    <!-- Container for multiple previous experiences in update modal -->
+                    <div class="md:col-span-2 border p-4 rounded-lg bg-gray-100" id="updatePreviousExperienceContainer">
+                        <h4 class="text-lg font-semibold mb-3">Previous Experience(s)</h4>
+                        <!-- Dynamic previous experience entries will be added here by JS -->
+                        <button type="button" id="addMorePrevExpUpdate" class="action-button mt-4 px-6 py-2 text-base">Add More Experience</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePassword">Password (leave blank to keep current):</label>
+                        <input type="password" id="updatePassword" name="password">
+                    </div>
+                </div>
+                <button type="submit" class="action-button">Save Changes</button>
+                <div id="updateMessage" class="message hidden"></div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Custom Alert/Confirm Modal -->
+    <div id="customAlertConfirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="customAlertConfirmClose">&times;</span>
+            <h3 id="customAlertConfirmTitle" class="text-xl font-bold mb-4"></h3>
+            <p id="customAlertConfirmMessage" class="mb-6"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="customAlertConfirmOkBtn" class="action-button">OK</button>
+                <button id="customAlertConfirmCancelBtn" class="action-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JavaScript files - Order matters for dependencies -->
+    <script type="module" src="./utils/utils.js"></script>
+    <script type="module" src="./utils/sessionManager.js"></script>
+    <script type="module" src="./utils/modals.js"></script>
+    <script type="module" src="./handlers/navigation.js"></script>
+    <script type="module" src="./handlers/adminDashboard.js"></script>
+    <script type="module" src="./handlers/employeeProfile.js"></script>
+    <script type="module" src="./handlers/authForms.js"></script>
+    <script type="module" src="./script.js"></script> <!-- Main script that orchestrates -->
+    
+</body>
+</html>
