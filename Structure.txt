@@ -1,0 +1,44 @@
+Day69MERN4/
+├── .git/                     # (Hidden folder) Git version control metadata
+├── .gitignore                # Specifies files/folders to ignore from Git (e.g., node_modules, .env)
+├── backend/                  # Node.js/Express.js server for the API
+│   ├── node_modules/         # (Ignored by Git) Backend dependencies
+│   ├── .env                  # (Ignored by Git) Environment variables (e.g., MONGODB_URI)
+│   ├── package.json          # Backend dependencies and scripts
+│   ├── package-lock.json     # Locks dependency versions for backend
+│   ├── server.js             # Main backend server entry point
+│   ├── config/               # Database configuration
+│   │   └── db.js             # MongoDB connection setup
+│   ├── models/               # Mongoose schemas/models
+│   │   └── User.js           # User schema definition
+│   ├── routes/               # API endpoint definitions
+│   │   └── userRoutes.js     # User and authentication routes
+│   ├── middleware/           # Express middleware functions
+│   │   └── calculateDerivedFields.js # Logic for age, experience calculations
+│   └── utils/                # Utility functions
+│       └── dateHelpers.js    # Date parsing and formatting utilities
+│
+├── frontend/                 # React.js application for the UI
+│   ├── node_modules/         # (Ignored by Git) Frontend dependencies
+│   ├── public/               # Static assets (like index.html)
+│   │   ├── index.html        # Main HTML file (where your <style> and scripts are linked)
+│   │   └── favicon.ico       # Website icon
+│   ├── src/                  # React source code (even if currently vanilla JS, this is typical)
+│   │   ├── App.js            # Main React component (if you start using React components)
+│   │   ├── index.js          # React entry point (if you start using React components)
+│   │   ├── script.js         # Your main frontend JavaScript logic
+│   │   ├── styles.css        # Custom CSS (currently minimal, but good place for more)
+│   │   ├── assets/           # Optional: For images, icons, etc.
+│   │   ├── handlers/         # JavaScript functions handling specific sections
+│   │   │   ├── adminDashboard.js
+│   │   │   ├── authForms.js
+│   │   │   ├── employeeProfile.js
+│   │   │   └── navigation.js
+│   │   └── utils/            # Frontend utility functions
+│   │       ├── modals.js     # Logic for custom alert/confirm modals
+│   │       ├── sessionManager.js # Handles user session state
+│   │       └── utils.js      # General helper functions (e.g., date formatting, dynamic fields)
+│   ├── package.json          # Frontend dependencies and scripts
+│   └── package-lock.json     # Locks dependency versions for frontend
+│
+└── README.md                 # (Recommended to add) Project description for GitHub
